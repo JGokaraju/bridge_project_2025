@@ -4,20 +4,21 @@ import matplotlib.pyplot as plt
 
 
 class BeamModel:
-    def __init__(self, EI=1):
+    def __init__(self, EI=100.):
         self.L = []  # span boundaries
         self.LM = [[0, 0, 0, 0, 0]]  # load matrix
         self.EI = EI
-        self.R = []  # support reactions
+        self.R = [-1, -1]  # support reactions
         self.beam_analysis = None
 
     def add_support(self, distance, support_type):
+
         if support_type == "roller":
             self.L.append(distance)
-            self.R.append([-1, 0])
+            self.R.extend([-1, 0])
         elif support_type == "pin":
             self.L.append(distance)
-            self.R.append([-1, -1])
+            self.R.extend([-1, -1])
         else:
             raise ValueError("Support type must be 'roller' or 'pin'.")
 
@@ -34,9 +35,9 @@ class BeamModel:
 
         raise ValueError("Distance exceeds beam length.")
 
-    def add_point_load(self, w, distance):
+    def add_point_load(self, weight, distance):
         span = self.identify_span(distance)
-        self.LM.append([span, 2, w, distance, 0])
+        self.LM.append([span, 2, weight, distance, 0])
 
     def add_udl(self, distance, udl):
         if not self.beam_analysis:
