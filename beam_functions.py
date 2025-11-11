@@ -49,6 +49,9 @@ class BeamModel:
     def analyze(self, n_points=10000):
         self.beam_analysis = cba.BeamAnalysis(self.L, self.EI, self.R, self.LM)
         self.beam_analysis.analyze(n_points)
+        print("Reactions (N):", self.beam_analysis.beam_results.R)
+        print("Max moment (Nm):", self.beam_analysis.beam_results.vRes[0].M.max())
+        print("Max shear (N):", self.beam_analysis.beam_results.vRes[0].V.max())
 
     def display(self):
         if not self.beam_analysis:
