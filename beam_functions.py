@@ -73,7 +73,13 @@ class BeamModel:
     def analyze_train(self, car1_load):
         self.analyze()
         bridge_analysis = cba.BridgeAnalysis(self.beam_analysis, self.create_train(car1_load))
+        
         self.bridge_env = bridge_analysis.run_vehicle(0.1)
+        cvals = bridge_analysis.critical_values(self.bridge_env)
+        pos = cvals["Mmax"]["pos"][0]
+        at = cvals["Mmax"]["at"]
+        val = cvals["Mmax"]["val"]
+        print(f"Max moment is {val} kNm at {at:.2f} m when front axle position is {pos} m")
 
     def display(self):
         if not self.beam_analysis:
@@ -82,4 +88,5 @@ class BeamModel:
             raise RuntimeError("self.analyze_train(car1_load) must be called first")
         self.beam_analysis.plot_results()
         self.bridge_env.plot()
+        
         plt.show()
