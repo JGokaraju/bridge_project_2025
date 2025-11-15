@@ -61,7 +61,7 @@ class BeamModel:
 
         return train
 
-    def analyze(self, n_points=10000):
+    def analyze(self, n_points=100):
         self.beam_analysis = cba.BeamAnalysis(self.L, self.EI, self.R, self.LM)
         self.beam_analysis.analyze(n_points)
         print("Reactions (N):", self.beam_analysis.beam_results.R)
@@ -74,12 +74,15 @@ class BeamModel:
         self.analyze()
         bridge_analysis = cba.BridgeAnalysis(self.beam_analysis, self.create_train(car1_load))
         
-        self.bridge_env = bridge_analysis.run_vehicle(0.1)
+        self.bridge_env = bridge_analysis.run_vehicle(1)
         cvals = bridge_analysis.critical_values(self.bridge_env)
         pos = cvals["Mmax"]["pos"][0]
         at = cvals["Mmax"]["at"]
         val = cvals["Mmax"]["val"]
-        print(f"Max moment is {val} kNm at {at:.2f} m when front axle position is {pos} m")
+        
+        print(f"Train analysis complete at {car1_load} N of car1 load: Max moment is {val} Nmm at {at:.2f} mm when front axle position is {pos} mm")
+
+        return cvals
 
     def display(self):
         if not self.beam_analysis:
