@@ -27,7 +27,7 @@ beam = BeamModel(EI = EI)
 beam.add_support(1200, "roller")
 
 def analyze_fos():
-    cvals = beam.analyze_train(100)
+    cvals = beam.analyze_train(125)
     
     
     #check yielding in compression & tension at max moment

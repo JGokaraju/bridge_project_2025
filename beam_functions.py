@@ -69,7 +69,7 @@ class BeamModel:
     #car1_load represents the load of the lightest freight car in Load Configuration 2.
     def create_train(self, car1_load):
 
-        locomotive = cba.vehicle.Vehicle([176], [car1_load*1.38/2]*2)
+        locomotive = cba.vehicle.Vehicle([176], [car1_load*1.1*1.38/2]*2)
         car_light = cba.vehicle.Vehicle([176], [car1_load/2]*2)
         car_heavy = cba.vehicle.Vehicle([176], [car1_load*1.1/2]*2)
 
@@ -79,7 +79,7 @@ class BeamModel:
 
         return train
 
-    def analyze(self, n_points=10000):
+    def analyze(self, n_points=500):
         self.beam_analysis = cba.BeamAnalysis(self.L, self.EI, self.R, self.LM)
         self.beam_analysis.analyze(n_points)
         print("Reactions (N):", self.beam_analysis.beam_results.R)
@@ -115,8 +115,8 @@ class BeamModel:
     def at_spans(self, target):
         
         target_Moment_y = np.interp(target, self.bridge_env.x, self.bridge_env.Mmax)
-        #print(f"The largest moment for the given location is {target_Moment_y} at {target} mm")
+        print(f"The largest moment for the given location is {target_Moment_y} at {target} mm")
 
         target_Shear_y = np.interp(target, self.bridge_env.x, self.bridge_env.Vmax)
-        #print(f"The largest shear for the given location is {target_Shear_y} at {target} mm")
+        print(f"The largest shear for the given location is {target_Shear_y} at {target} mm")
         return target_Moment_y, target_Shear_y
