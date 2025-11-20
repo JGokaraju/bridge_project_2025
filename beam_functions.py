@@ -8,7 +8,7 @@ class BeamModel:
         self.L = []  # span boundaries
         self.LM = [[0, 0, 0, 0, 0]]  # load matrix
         self.EI = EI
-        self.R = [-1, -1]  # support reactions
+        self.R = [-1, 0]  # support reactions
         self.beam_analysis = None
         self.bridge_env = None
 
@@ -20,9 +20,27 @@ class BeamModel:
         elif support_type == "pin":
             self.L.append(distance)
             self.R.extend([-1, -1])
+        elif support_type == "filler":
+            self.L.append(distance)
+            self.R.extend([0, 0])
+
+
         else:
             raise ValueError("Support type must be 'roller' or 'pin'.")
 
+    def get_span_max_moments(self):
+        if not self.beam_analysis:
+            raise RuntimeError("Beam has not been analyzed yet.")
+
+        results = self.beam_analysis.beam_results.vRes
+        span_max = []
+
+        for i, span in enumerate(results, 1):
+            Mmax = np.max(span.M)
+            x_at = span.X[np.argmax(span.M)]
+            span_max.append((i, Mmax, x_at))
+
+        return span_max
     def identify_span(self, distance):
         if not self.L:
             raise ValueError("No spans defined.")
@@ -61,7 +79,7 @@ class BeamModel:
 
         return train
 
-    def analyze(self, n_points=100):
+    def analyze(self, n_points=10000):
         self.beam_analysis = cba.BeamAnalysis(self.L, self.EI, self.R, self.LM)
         self.beam_analysis.analyze(n_points)
         print("Reactions (N):", self.beam_analysis.beam_results.R)
@@ -89,7 +107,16 @@ class BeamModel:
             raise RuntimeError("Beam not analyzed yet.")
         if not self.bridge_env:
             raise RuntimeError("self.analyze_train(car1_load) must be called first")
-        self.beam_analysis.plot_results()
+        #self.beam_analysis.plot_results()
         self.bridge_env.plot()
-        
+                       
         plt.show()
+
+    def at_spans(self, target):
+        
+        target_Moment_y = np.interp(target, self.bridge_env.x, self.bridge_env.Mmax)
+        #print(f"The largest moment for the given location is {target_Moment_y} at {target} mm")
+
+        target_Shear_y = np.interp(target, self.bridge_env.x, self.bridge_env.Vmax)
+        #print(f"The largest shear for the given location is {target_Shear_y} at {target} mm")
+        return target_Moment_y, target_Shear_y

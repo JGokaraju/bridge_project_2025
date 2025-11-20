@@ -80,3 +80,4 @@ def analyze_max_P():
 analyze_max_P()
 
 beam.display()
+    
